@@ -1,12 +1,13 @@
 const express = require('express')
-const { append } = require('express/lib/response')
 const PORT = 3000 || process.env.PORT
+
+const budgetRouter = require('./routers/budget_router')
 
 const app = express()
 
-app.get('/', (req, res) => {
-    res.send('Hello World')
-})
+app.use(express.urlencoded({extended:true}))
+app.use(express.json())
+app.use('/envelopes', budgetRouter)
 
 
 app.listen(PORT, ()=>{
