@@ -7,7 +7,7 @@ const db = {
         "availableAmount":30
     }
 ],
-    total_budget: 500
+    total_budget: 0
 }
 
 module.exports = db

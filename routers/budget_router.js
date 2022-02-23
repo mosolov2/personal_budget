@@ -1,49 +1,45 @@
 const express = require('express')
 const budgetRouter = express.Router()
 const db = require('../db/mock_db')
-const validation = require('../utils/validate')
+const {postEnvelope ,updateEnvelope, validateEnvelope} = require('../middleware/validate')
 
+//get all envelopes
 budgetRouter.get('/', (req, res) => {
     res.send(db)
 })
 
-budgetRouter.post('/', (req, res) => {
-    const id = Date.now() + Math.random()
-    db.envelopes.push({
-        id,
-        ...req.body
-    })
-    res.status(201).send(db)
+//create envelope
+budgetRouter.post('/', validateEnvelope, postEnvelope, (req, res) => {  
+       
+            const id = Date.now() + Math.random()
+            db.envelopes.push({
+                id,
+                ...req.body
+            })
+            
+            res.status(201).send(db)    
+    
 })
 
+//create total budget
 budgetRouter.post('/total-budget', (req, res) => {
     db.total_budget = req.body.budget
     res.send(db)
 })
 
-budgetRouter.post('/:id', (req, res) => {
-
-    const envelopeIndex = db.envelopes.findIndex(env => {      
-        
-        return env.id === Number(req.params.id)
-    })
-
+//update envelope
+budgetRouter.put('/:id', validateEnvelope, updateEnvelope, (req, res)=> {
+    const envelopeIndex = req.index
+    let envelopeId = db.envelopes[envelopeIndex].id
+    db.envelopes[envelopeIndex] = {
+        id: envelopeId,
+        ...req.body
+    }
     
-    if (envelopeIndex === -1) {
-        return res.status(404).send()
-    }
-
-    const envelopePercentage = db.envelopes[envelopeIndex].percentBudget
-    const amountToAdd = req.body.addAmount
-    const totalBudget = db.total_budget
-    const availableAmount = db.envelopes[envelopeIndex].availableAmount
-    const isAmountAllowed = validation.checkAmountAgainstBudget(availableAmount, amountToAdd, envelopePercentage, totalBudget)
-    if(!isAmountAllowed) {
-        
-        return res.send(`The maximum allowed is ${envelopePercentage}% of ${totalBudget}`)
-    }
-    db.envelopes[envelopeIndex].availableAmount += +req.body.addAmount    
+   
     res.send(db.envelopes[envelopeIndex])
 })
+
+
 
 module.exports = budgetRouter
