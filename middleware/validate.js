@@ -1,5 +1,4 @@
 const db = require('../db/mock_db')
-const validation = require('../utils/validate')
 
 exports.checkIfEnvelopeExists = (req, res, next) => {
     
