@@ -4,7 +4,11 @@ const db = require('../db/mock_db')
 const controller = require('../controllers/budgetController')
 const { check } = require('express-validator')
 const validation = require('../utils/validate')
+<<<<<<< HEAD
 const { checkIfEnvelopeExists } = require('../middleware/validate')
+=======
+const { postEnvelope, checkIfEnvelopeExists, validateEnvelope } = require('../middleware/validate')
+>>>>>>> 2d0189b613f15d4a56d2dbafe6c3df928d113bb1
 
 //get all envelopes
 budgetRouter.get('/', controller.getEnvelopes)
