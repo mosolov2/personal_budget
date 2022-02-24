@@ -42,7 +42,7 @@ exports.postEnvelope = (req, res, next) => {
     next()
 }
 
-exports.updateEnvelope = (req, res, next) => {
+exports.updateDeleteEnvelope = (req, res, next) => {
     
     const envelopeIndex = db.envelopes.findIndex(env => {
 
@@ -50,7 +50,7 @@ exports.updateEnvelope = (req, res, next) => {
     })
 
     if (envelopeIndex === -1) {
-        return res.status(404).send()
+        return res.status(404).send(false)
     }    
    
     req.index = envelopeIndex
