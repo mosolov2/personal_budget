@@ -5,10 +5,10 @@ const validation = require('../utils/validate')
 exports.validateEnvelope = (req, res, next) => {
 
     //checks if the total budget is set
-    const isTotalBudgetSet = db.total_budget && db.total_budget > 0
+    /* const isTotalBudgetSet = db.total_budget && db.total_budget > 0
     if (!isTotalBudgetSet) {
         return res.status(400).send('Before creating an Envelope is necessary to set a Budget')
-    }
+    } */
 
     const availableAmount = req.body.availableAmount
     const envelopePercentage = req.body.percentBudget
@@ -23,7 +23,7 @@ exports.validateEnvelope = (req, res, next) => {
     
     const isTotalPercentageValid = validation.validateTotalPercentage(envelopePercentage)
     if (!isTotalPercentageValid) {
-        return res.status(400).send('Total percentage cannot exceed 100%')
+        return res.status(400).send('Total percentage of all envelopes cannot exceed 100%.')
     }
 
     next()
@@ -42,7 +42,7 @@ exports.postEnvelope = (req, res, next) => {
     next()
 }
 
-exports.updateDeleteEnvelope = (req, res, next) => {
+exports.checkIfEnvelopeExists = (req, res, next) => {
     
     const envelopeIndex = db.envelopes.findIndex(env => {
 
