@@ -22,13 +22,19 @@ exports.validateTotalPercentage = (amountToAdd) =>{
     
     const validatePercentage = db.envelopes.reduce((prev, curr) =>{
         
-        return prev + curr.percentBudget
+        return +prev + +curr.percentBudget
     },0)
 
-  
-    if((validatePercentage + amountToAdd) <= 100) {
-        return true
+    
+    if((+validatePercentage + +amountToAdd) <= 100) {
+        return {
+            valid: true
+        }
     }
 
-    return false
+    const availablePercentage = 100 - validatePercentage
+    return {
+        valid: false,
+        availablePercentage
+    }
 }
