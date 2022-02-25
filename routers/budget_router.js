@@ -4,8 +4,28 @@ const db = require('../db/mock_db')
 const controller = require('../controllers/budgetController')
 const { check } = require('express-validator')
 const validation = require('../utils/validate')
+const transferRouter = require('./transfer_router')
 
-const { checkIfEnvelopeExists } = require('../middleware/validate')
+budgetRouter.use('/transfer', transferRouter)
+budgetRouter.use('/transfer/:id/', transferRouter)
+
+budgetRouter.param('id', (req, res, next, id)=>{
+   
+    const envelopeIndex = db.envelopes.findIndex(env => {
+
+        return env.id === +id
+    })
+
+    if (envelopeIndex === -1) {
+        return res.status(404).send(false)
+    }    
+    req.index = envelopeIndex
+    
+    next()
+   
+})
+
+
 
 //get all envelopes
 budgetRouter.get('/', controller.getEnvelopes)
@@ -30,21 +50,21 @@ budgetRouter.post('/',
         .isString().withMessage('Please provide a valid Title'),
     check('percentBudget').trim().not().isEmpty().withMessage("Field is required")
         .isFloat().withMessage('Please provide a numeric value'),
-    check('availableAmount').trim().not().isEmpty().withMessage("Field is required")
+    check('envelopeAmount').trim().not().isEmpty().withMessage("Field is required")
         .isFloat().withMessage('Please provide a numeric value'),
-    check().custom((val, { req }) => {
-        const availableAmount = req.body.availableAmount
+    /* check().custom((val, { req }) => {
+        const envelopeAmount = req.body.envelopeAmount
         const envelopePercentage = req.body.percentBudget
         const totalBudget = db.total_budget
 
-        const isAmountAllowed = validation.checkAmountAgainstBudget(availableAmount, envelopePercentage, totalBudget)
+        const isAmountAllowed = validation.checkAmountAgainstBudget(envelopeAmount, envelopePercentage, totalBudget)
         if (!isAmountAllowed.valid) {
 
             throw new Error(`The maximum allowed for this envelope is ${isAmountAllowed.maximumAllowed} (${envelopePercentage}% of ${totalBudget})`)
 
         }
         return true
-    }),
+    }), */
     check().custom((val, { req }) => {
         const envelopePercentage = req.body.percentBudget
         const isTotalPercentageValid = validation.validateTotalPercentage(envelopePercentage)
@@ -58,7 +78,7 @@ budgetRouter.post('/',
 )
 
 //update envelope by id
-budgetRouter.put('/:id', checkIfEnvelopeExists,
+budgetRouter.put('/:id',
     check().custom(() => {
         const isTotalBudgetSet = db.total_budget && db.total_budget > 0
         if (!isTotalBudgetSet) {
@@ -69,22 +89,7 @@ budgetRouter.put('/:id', checkIfEnvelopeExists,
     check('title').trim().not().isEmpty().withMessage("Field is required")
         .isString().withMessage('Please provide a valid Title'),
     check('percentBudget').trim().not().isEmpty().withMessage("Field is required")
-        .isFloat().withMessage('Please provide a numeric value'),
-    check('availableAmount').trim().not().isEmpty().withMessage("Field is required")
-        .isFloat().withMessage('Please provide a numeric value'),
-    check().custom((val, { req }) => {
-        const availableAmount = req.body.availableAmount
-        const envelopePercentage = req.body.percentBudget
-        const totalBudget = db.total_budget
-
-        const isAmountAllowed = validation.checkAmountAgainstBudget(availableAmount, envelopePercentage, totalBudget)
-        if (!isAmountAllowed.valid) {
-
-            throw new Error(`The maximum allowed for this envelope is ${isAmountAllowed.maximumAllowed} (${envelopePercentage}% of ${totalBudget})`)
-
-        }
-        return true
-    }),
+        .isFloat().withMessage('Please provide a numeric value'),       
     check().custom((val, { req }) => {
         const envelopePercentage = req.body.percentBudget
         const isTotalPercentageValid = validation.validateTotalPercentage(envelopePercentage)
@@ -96,8 +101,20 @@ budgetRouter.put('/:id', checkIfEnvelopeExists,
     }),
     controller.updateEnvelope)
 
+budgetRouter.post('/deposit/:id',
+    check('depositAmount').not().isEmpty().withMessage("Field is required")
+    .isFloat().withMessage('Please provide a numeric value'),
+    controller.depositToEnvelope     
+)
+
+budgetRouter.post('/withdraw/:id',
+    check('withdrawAmount').not().isEmpty().withMessage("Field is required")
+    .isFloat().withMessage('Please provide a numeric value'),
+    controller.withdrawFromEnvelope     
+)
+
 //delete envelope by id
-budgetRouter.delete('/:id', checkIfEnvelopeExists, controller.deleteEnvelope)
+budgetRouter.delete('/:id', controller.deleteEnvelope)
 
 //delete all envelopes
 budgetRouter.delete('/', controller.deleteAllEnvelopes)

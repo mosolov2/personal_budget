@@ -1,5 +1,9 @@
-exports.updateBudget = (envelopesArray, totalBudget) =>{
-    const budgetPercentLeft = envelopesArray.reduce((prev, curr) => {
-
-    }, 0)
+const db = require('../db/mock_db')
+exports.updateBalance = (action, amount) =>{    
+    if(action === 'DEPOSIT'){
+        db.balance += +amount
+    } else if(action === 'WITHDRAW'){
+        db.balance -= +amount
+    }
+    
 }
