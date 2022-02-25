@@ -13,8 +13,7 @@ transferRouter.param('id', (req, res, next, id)=>{
     if (envelopeIndex === -1) {
         return res.status(404).send(false)
     }    
-    req.transferIndex = envelopeIndex
-    
+    req.transferIndex = envelopeIndex    
     next()
    
 })

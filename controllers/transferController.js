@@ -20,7 +20,6 @@ exports.transferMoney = (req, res, next) =>{
     if (+senderEnvelope.envelopeAmount < +amountToBeTransfered) {
         return res.status(400).send({ error: `There is not enough money in envelope ${senderEnvelope.title} to complete your request. Amount Availabe: ${db.envelopes[req.index].envelopeAmount}` })
     }
-
     db.envelopes[req.index].envelopeAmount -= +amountToBeTransfered
     db.envelopes[transferIndex].envelopeAmount += +amountToBeTransfered
     res.send( db.envelopes)

@@ -12,7 +12,6 @@ budgetRouter.use('/transfer/:id/', transferRouter)
 budgetRouter.param('id', (req, res, next, id)=>{
    
     const envelopeIndex = db.envelopes.findIndex(env => {
-
         return env.id === +id
     })
 
