@@ -12,8 +12,7 @@ exports.getTransfer = (req, res) =>{
     res.send(allEnvelopes)
 }
 
-exports.transferMoney = (req, res, next) =>{
-   
+exports.transferMoney = (req, res, next) =>{   
     const amountToBeTransfered = req.body.transferAmount
     const transferIndex = req.transferIndex
     const senderEnvelope = db.envelopes[req.index]

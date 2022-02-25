@@ -18,10 +18,8 @@ budgetRouter.param('id', (req, res, next, id)=>{
     if (envelopeIndex === -1) {
         return res.status(404).send(false)
     }    
-    req.index = envelopeIndex
-    
-    next()
-   
+    req.index = envelopeIndex    
+    next()   
 })
 
 

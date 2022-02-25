@@ -14,8 +14,7 @@ transferRouter.param('id', (req, res, next, id)=>{
         return res.status(404).send(false)
     }    
     req.transferIndex = envelopeIndex    
-    next()
-   
+    next()   
 })
 
 transferRouter.get('/', transferController.getTransfer)
